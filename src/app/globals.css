@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base */
+    --background: 0 0% 100%;
+    --foreground: 210 40% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 40% 12%;
+
+    /* ✅ Brand azul (light) - #255285 aprox */
+    --primary: 212 57% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 96%;
+    --secondary-foreground: 210 40% 12%;
+
+    --muted: 210 15% 96%;
+    --muted-foreground: 210 20% 45%;
+
+    /* ✅ Accent alineado al brand (light) */
+    --accent: 212 57% 33%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 25% 90%;
+    --input: 210 25% 90%;
+    --ring: 212 57% 33%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* ✅ Neutros tipo Tabler (navy) */
+    --background: 222 47% 7%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 35% 12%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 35% 12%;
+    --popover-foreground: 210 40% 96%;
+
+    /*
+      ✅ Brand corporativo en dark:
+      mantenemos tu #255285 como base, pero le subimos un poco el brillo para que
+      "funcione" sobre navy (sigue viéndose corporativo, no cyan).
+    */
+    --primary: 212 65% 55%;
+    --primary-foreground: 222 47% 7%;
+
+    /* Superficies secundarias */
+    --secondary: 222 28% 15%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 222 28% 15%;
+    --muted-foreground: 215 20% 72%;
+
+    /*
+      ✅ Accent para gráficos/indicadores (teal/cyan estilo Tabler)
+      OJO: lo usamos para charts, no para botones principales.
+    */
+    --accent: 190 90% 55%;
+    --accent-foreground: 222 47% 7%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 210 40% 96%;
+
+    --border: 222 22% 18%;
+    --input: 222 22% 18%;
+    --ring: 190 90% 55%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+      sans-serif;
+  }
+}
+
+/* ✅ Transición suave al cambiar tema (dark/light) */
+html.theme-transition,
+html.theme-transition * {
+  transition-property: background-color, color, border-color, outline-color, fill, stroke, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ✅ Respeta usuarios con "reducir movimiento" */
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition,
+  html.theme-transition * {
+    transition: none !important;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .card-stat {
+    @apply bg-card text-card-foreground rounded-lg shadow-sm p-6 border;
+  }
+}

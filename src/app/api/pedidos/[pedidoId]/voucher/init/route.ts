@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import { adminBucket, adminDb } from "@/lib/firebaseAdmin";
+
+export async function POST(
+  req: Request,
+  { params }: { params: { pedidoId: string } }
+) {
+  const { pedidoId } = params;
+
+  const body = await req.json().catch(() => ({}));
+  const token = String(body?.token ?? "");
+  const contentType = String(body?.contentType ?? "image/jpeg");
+
+  if (!pedidoId) return NextResponse.json({ error: "pedidoId requerido" }, { status: 400 });
+  if (!token) return NextResponse.json({ error: "token requerido" }, { status: 400 });
+
+  const db = adminDb();
+  const ref = db.collection("pedidos").doc(pedidoId);
+  const snap = await ref.get();
+
+  if (!snap.exists) return NextResponse.json({ error: "Pedido no encontrado" }, { status: 404 });
+
+  const data = snap.data() as any;
+  if (data?.accessToken !== token) {
+    return NextResponse.json({ error: "Link inválido o expirado" }, { status: 403 });
+  }
+
+  const path = `vouchers/${pedidoId}/${Date.now()}.jpg`;
+
+  const bucket = adminBucket();
+  const file = bucket.file(path);
+
+  const [uploadUrl] = await file.getSignedUrl({
+    version: "v4",
+    action: "write",
+    expires: Date.now() + 10 * 60 * 1000,
+    contentType,
+  });
+
+  return NextResponse.json({ uploadUrl, path });
+}
