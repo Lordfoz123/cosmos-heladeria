@@ -12,7 +12,7 @@ import ShopFooter from "@/components/ShopFooter";
 // import { ForceSystemTheme } from "@/components/ForceSystemTheme";
 
 export const metadata: Metadata = {
-  title: "Cosmos - Heladería Artesanal",
+  title: "Cosmos - Infinitas Posibilidades",
   description: "Sistema de gestión de inventario y ventas para heladería",
 };
 
