@@ -5,6 +5,10 @@ import ToasterClient from "@/components/ToasterClient";
 import ThemeProvider from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WishlistProvider } from "@/components/WishlistContext";
+
+// 🔥 1. IMPORTAMOS EL FOOTER AQUÍ ARRIBA 🔥
+import ShopFooter from "@/components/ShopFooter";
+
 // import { ForceSystemTheme } from "@/components/ForceSystemTheme";
 
 export const metadata: Metadata = {
@@ -23,7 +27,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <WishlistProvider>
               <CarritoProvider>
                 <ToasterClient />
+                
+                {/* Aquí se carga el contenido de cada página (Inicio, Tienda, etc.) */}
                 {children}
+
+                {/* 🔥 2. PONEMOS EL FOOTER GLOBAL AL FINAL DE TODO 🔥 */}
+                <ShopFooter />
+
               </CarritoProvider>
             </WishlistProvider>
           </AuthProvider>

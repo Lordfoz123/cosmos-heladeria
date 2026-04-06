@@ -282,7 +282,9 @@ export default function GestionUsuariosPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <div className="text-muted-foreground">Cargando…</div>
+        <div className="text-muted-foreground flex items-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin" /> Cargando…
+        </div>
       </div>
     );
   }
@@ -290,7 +292,7 @@ export default function GestionUsuariosPage() {
   if (!isAdmin) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <div className="rounded-2xl border border-border/60 bg-card p-6 text-card-foreground shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
           <div className="font-extrabold text-foreground text-lg">No autorizado</div>
           <div className="text-sm text-muted-foreground mt-1">
             Solo un administrador puede gestionar usuarios.
@@ -301,17 +303,18 @@ export default function GestionUsuariosPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 pb-12 pt-6 font-sans">
-      <div className="flex items-center justify-between gap-3 mb-4">
+    <div className="max-w-5xl mx-auto px-4 pb-12 pt-6 font-sans transition-colors duration-300">
+      <div className="flex items-center justify-between gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-            <Users className="h-5 w-5" />
+          {/* 🔥 CORRECCIÓN DEL ICONO PRINCIPAL 🔥 */}
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 shadow-sm border border-blue-500/20">
+            <Users className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground leading-none">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground leading-none tracking-tight">
               Gestión de Usuarios
             </h1>
-            <div className="text-muted-foreground text-sm mt-1">
+            <div className="text-muted-foreground text-sm mt-1 font-medium">
               Crear, editar, activar/desactivar o eliminar personal interno.
             </div>
           </div>
@@ -322,10 +325,10 @@ export default function GestionUsuariosPage() {
           onClick={loadUsers}
           disabled={listLoading}
           className={cn(
-            "inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-bold shadow-sm",
-            "bg-muted hover:bg-muted/80 text-foreground border border-border/60",
-            "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring",
-            listLoading ? "opacity-60 cursor-not-allowed" : ""
+            "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-bold shadow-sm",
+            "bg-card hover:bg-muted text-foreground border border-border",
+            "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30",
+            listLoading ? "opacity-60 cursor-not-allowed" : "active:scale-95"
           )}
         >
           <RefreshCcw className={cn("h-4 w-4", listLoading ? "animate-spin" : "")} />
@@ -334,33 +337,35 @@ export default function GestionUsuariosPage() {
       </div>
 
       {/* Crear */}
-      <div className="rounded-2xl border border-border/60 bg-card p-6 text-card-foreground shadow-[0_8px_28px_-18px_rgba(0,0,0,0.65)] mb-6">
-        <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-muted/40 p-4 mb-5">
-          <div className="mt-0.5 grid h-10 w-10 place-items-center rounded-xl bg-card border border-border/60">
-            <ShieldCheck className="h-5 w-5 text-primary" />
+      <div className="rounded-3xl border border-border bg-card p-8 text-card-foreground shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* 🔥 ALERTA VISUAL ADAPTADA AL MODO OSCURO 🔥 */}
+        <div className="flex items-start gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-5 mb-8">
+          <div className="mt-0.5 grid h-10 w-10 place-items-center rounded-xl bg-background border border-border shadow-sm shrink-0">
+            <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-sm">
-            <div className="font-extrabold text-foreground">Importante</div>
-            <div className="text-muted-foreground mt-0.5">
-              Aquí NO se crean clientes. Solo personal interno.
+            <div className="font-extrabold text-foreground tracking-tight">Importante</div>
+            <div className="text-muted-foreground mt-0.5 font-medium">
+              Aquí NO se crean clientes. Esta sección es exclusivamente para personal interno.
             </div>
           </div>
         </div>
 
-        <form onSubmit={onCreateUser} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={onCreateUser} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Foto */}
           <div className="md:col-span-2">
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 block">
               Foto de perfil (opcional)
             </label>
 
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full overflow-hidden border border-border/60 bg-muted grid place-items-center">
+              <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-border bg-muted grid place-items-center shrink-0">
                 {photoPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photoPreview} alt="Preview" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-xs font-extrabold text-muted-foreground">Sin foto</span>
+                  <span className="text-xs font-extrabold text-muted-foreground uppercase">Sin foto</span>
                 )}
               </div>
 
@@ -372,27 +377,28 @@ export default function GestionUsuariosPage() {
                 onChange={(e) => onFileSelected(e.target.files?.[0] ?? null)}
               />
 
-              <button
-                type="button"
-                onClick={onPickPhoto}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-bold shadow-sm",
-                  "bg-muted hover:bg-muted/80 text-foreground border border-border/60",
-                  "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
-                )}
-              >
-                <Upload className="h-4 w-4" />
-                Elegir foto
-              </button>
+              <div className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    onClick={onPickPhoto}
+                    className={cn(
+                      "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-bold shadow-sm",
+                      "bg-background hover:bg-muted text-foreground border border-border",
+                      "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-95"
+                    )}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Elegir foto
+                  </button>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase mt-1 px-1">Máx 1MB. JPG/PNG/WEBP.</span>
+              </div>
             </div>
-
-            <div className="text-xs text-muted-foreground mt-2">Máx 1MB. JPG/PNG/WEBP.</div>
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">Nombres</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Nombres</label>
             <input
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-medium transition-all"
               value={nombres}
               onChange={(e) => setNombres(e.target.value)}
               required
@@ -400,9 +406,9 @@ export default function GestionUsuariosPage() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">Apellidos</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Apellidos</label>
             <input
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-medium transition-all"
               value={apellidos}
               onChange={(e) => setApellidos(e.target.value)}
               required
@@ -410,11 +416,11 @@ export default function GestionUsuariosPage() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">
               Teléfono (opcional)
             </label>
             <input
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-medium transition-all"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
               placeholder="+51 999 999 999"
@@ -422,9 +428,9 @@ export default function GestionUsuariosPage() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">Rol</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Rol</label>
             <select
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-bold text-foreground appearance-none cursor-pointer transition-all"
               value={role}
               onChange={(e) => setRole(e.target.value as RoleValue)}
             >
@@ -437,54 +443,55 @@ export default function GestionUsuariosPage() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">Correo</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Correo (Usuario)</label>
             <input
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-medium transition-all"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="empleado@correo.com"
               required
             />
             {!isValidEmail(email) && email.length > 0 && (
-              <div className="text-xs text-destructive mt-1">Correo inválido</div>
+              <div className="text-[10px] font-bold text-destructive uppercase mt-1.5 ml-1">Correo inválido</div>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-muted-foreground mb-1 block">Contraseña</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Contraseña</label>
             <input
               type="password"
-              className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border border-border rounded-xl px-4 py-3 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 font-medium transition-all"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="mínimo 6 caracteres"
+              placeholder="Mínimo 6 caracteres"
               required
             />
             {password.length > 0 && password.length < 6 && (
-              <div className="text-xs text-destructive mt-1">Mínimo 6 caracteres</div>
+              <div className="text-[10px] font-bold text-destructive uppercase mt-1.5 ml-1">Mínimo 6 caracteres</div>
             )}
           </div>
 
-          <div className="md:col-span-2 flex justify-end">
+          {/* 🔥 BOTÓN PRINCIPAL DE CREACIÓN 🔥 */}
+          <div className="md:col-span-2 flex justify-end pt-4 border-t border-border/50">
             <motion.button
               type="submit"
-              whileHover={{ scale: submitting ? 1 : 1.04 }}
-              whileTap={{ scale: submitting ? 1 : 0.98 }}
+              whileHover={{ scale: submitting || !canSubmit ? 1 : 1.02 }}
+              whileTap={{ scale: submitting || !canSubmit ? 1 : 0.95 }}
               disabled={!canSubmit}
               className={cn(
-                "bg-primary hover:bg-primary/90 text-primary-foreground px-7 py-2.5 rounded-full font-bold shadow-sm",
-                "transition-all duration-200 text-base flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-ring",
-                "disabled:opacity-60"
+                "bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg",
+                "transition-all duration-200 text-sm flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 uppercase tracking-widest",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
               {submitting ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Creando…
                 </>
               ) : (
                 <>
-                  <UserPlus className="h-5 w-5" />
+                  <UserPlus className="h-4 w-4" />
                   Crear usuario
                 </>
               )}
@@ -494,27 +501,35 @@ export default function GestionUsuariosPage() {
       </div>
 
       {/* Listado */}
-      <div className="rounded-2xl border border-border/60 bg-card p-6 text-card-foreground shadow-[0_8px_28px_-18px_rgba(0,0,0,0.65)]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+      <div className="rounded-3xl border border-border bg-card p-8 text-card-foreground shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-border/40 pb-6">
           <div>
-            <div className="font-extrabold text-foreground text-lg">Usuarios</div>
-            <div className="text-sm text-muted-foreground">Lista de personal registrado</div>
+            <div className="font-extrabold text-foreground text-xl tracking-tight">Lista de Personal</div>
+            <div className="text-sm text-muted-foreground font-medium">Directorio activo de la plataforma</div>
           </div>
 
-          <input
-            className="border border-border rounded-lg px-4 py-2 bg-background w-full md:w-80 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Buscar por email, nombre o rol…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
+          <div className="relative">
+            <input
+                className="border border-border rounded-xl pl-10 pr-4 py-2.5 bg-background w-full md:w-80 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all font-medium text-sm"
+                placeholder="Buscar por email, nombre o rol…"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+            />
+            {/* Si quieres ponerle el icono de lupa, puedes importar Search de lucide-react y ponerlo aquí con absolute */}
+          </div>
         </div>
 
         {listLoading ? (
-          <div className="text-muted-foreground">Cargando usuarios…</div>
+          <div className="py-12 flex flex-col items-center justify-center text-muted-foreground gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <span className="font-bold text-sm uppercase tracking-widest">Cargando directorio...</span>
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="text-muted-foreground">No hay usuarios.</div>
+          <div className="py-12 text-center text-muted-foreground font-bold text-sm uppercase tracking-widest">
+              No hay usuarios que coincidan con la búsqueda.
+          </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <AnimatePresence initial={false}>
               {filtered.map((u) => {
                 const active = u.active !== false;
@@ -529,42 +544,38 @@ export default function GestionUsuariosPage() {
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    className="rounded-xl border border-border/60 bg-muted/30 p-4 flex flex-col md:flex-row md:items-center gap-3 justify-between"
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="rounded-2xl border border-border bg-background p-4 flex flex-col md:flex-row md:items-center gap-4 justify-between shadow-sm hover:shadow-md transition-shadow group"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-10 w-10 rounded-full overflow-hidden border border-border/60 bg-muted grid place-items-center">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-border bg-muted grid place-items-center shadow-inner">
                         {u.photoURL ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={u.photoURL} alt={title} className="h-full w-full object-cover" />
+                          <img src={u.photoURL} alt={title} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         ) : (
-                          <span className="text-xs font-extrabold text-muted-foreground">—</span>
+                          <span className="text-xs font-extrabold text-muted-foreground uppercase">---</span>
                         )}
                       </div>
 
                       <div className="min-w-0">
-                        <div className="font-extrabold text-foreground truncate">{title}</div>
-                        <div className="text-xs text-muted-foreground truncate">{u.email}</div>
-                        <div className="text-xs text-muted-foreground">
-                          Rol: <span className="font-semibold text-foreground">{u.role ?? "—"}</span> • Estado:{" "}
-                          <span className={cn("font-semibold", active ? "text-foreground" : "text-destructive")}>
-                            {active ? "Activo" : "Desactivado"}
+                        <div className="font-extrabold text-foreground truncate text-base tracking-tight">{title}</div>
+                        <div className="text-xs text-muted-foreground truncate font-medium">{u.email}</div>
+                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+                          <span className="bg-muted px-2 py-0.5 rounded-md font-bold text-foreground uppercase tracking-widest text-[9px]">{u.role ?? "—"}</span> 
+                          <span className={cn("font-bold text-[10px] uppercase tracking-widest", active ? "text-emerald-500" : "text-destructive")}>
+                            • {active ? "Activo" : "Desactivado"}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 justify-end flex-wrap">
+                    <div className="flex items-center gap-2 justify-end flex-wrap mt-2 md:mt-0 pt-3 md:pt-0 border-t border-border md:border-none">
                       <button
                         type="button"
                         onClick={() => openEdit(u)}
-                        className={cn(
-                          "inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold shadow-sm transition-all duration-200",
-                          "bg-muted hover:bg-muted/80 text-foreground border border-border/60",
-                          "focus:outline-none focus:ring-2 focus:ring-ring"
-                        )}
+                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 font-bold text-xs shadow-sm bg-card hover:bg-muted text-foreground border border-border focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-colors"
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                         Editar
                       </button>
 
@@ -572,27 +583,22 @@ export default function GestionUsuariosPage() {
                         type="button"
                         onClick={() => setActive(u.uid, !active)}
                         className={cn(
-                          "inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold shadow-sm transition-all duration-200",
+                          "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 font-bold text-xs shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30",
                           active
-                            ? "bg-muted hover:bg-muted/80 text-foreground border border-border/60"
-                            : "bg-primary hover:bg-primary/90 text-primary-foreground",
-                          "focus:outline-none focus:ring-2 focus:ring-ring"
+                            ? "bg-card hover:bg-muted text-foreground border border-border"
+                            : "bg-blue-600 hover:bg-blue-700 text-white border border-transparent"
                         )}
                       >
-                        <Power className="h-4 w-4" />
+                        <Power className="h-3.5 w-3.5" />
                         {active ? "Desactivar" : "Activar"}
                       </button>
 
                       <button
                         type="button"
                         onClick={() => deleteUser(u.uid)}
-                        className={cn(
-                          "inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold shadow-sm transition-all duration-200",
-                          "bg-destructive/15 hover:bg-destructive/20 text-destructive border border-destructive/20",
-                          "focus:outline-none focus:ring-2 focus:ring-ring"
-                        )}
+                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 font-bold text-xs shadow-sm bg-destructive/10 hover:bg-destructive text-destructive hover:text-destructive-foreground border border-destructive/20 focus:outline-none transition-colors"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                         Eliminar
                       </button>
                     </div>
@@ -608,39 +614,40 @@ export default function GestionUsuariosPage() {
       <AnimatePresence>
         {editOpen && editing && (
           <motion.div
-            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[3px] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 text-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.14 } }}
             onClick={() => (editSubmitting ? null : setEditOpen(false))}
           >
             <motion.div
-              className="bg-card text-card-foreground w-full max-w-md rounded-2xl shadow-2xl relative border border-border/60 p-0"
-              initial={{ opacity: 0, y: 38, scale: 0.95 }}
+              className="bg-card w-full max-w-md rounded-3xl shadow-2xl relative border border-border overflow-hidden"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 35, scale: 0.97 }}
-              transition={{ duration: 0.28, type: "spring", damping: 20, stiffness: 210 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                className="absolute top-5 right-7 text-2xl text-muted-foreground hover:text-foreground transition disabled:opacity-50"
-                onClick={() => setEditOpen(false)}
-                aria-label="Cerrar"
-                type="button"
-                disabled={editSubmitting}
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="p-6 border-b border-border bg-muted/30 flex justify-between items-center">
+                 <div>
+                    <h3 className="font-extrabold text-xl text-foreground tracking-tight">Editar usuario</h3>
+                    <p className="text-xs font-medium text-muted-foreground mt-0.5 truncate max-w-[200px]">{editing.email}</p>
+                 </div>
+                 <button
+                    className="p-2 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors rounded-full disabled:opacity-50"
+                    onClick={() => setEditOpen(false)}
+                    disabled={editSubmitting}
+                 >
+                    <X className="h-5 w-5" />
+                 </button>
+              </div>
 
-              <div className="p-7">
-                <h3 className="font-extrabold text-xl text-foreground">Editar usuario</h3>
-                <p className="text-sm text-muted-foreground mt-1 truncate">{editing.email}</p>
-
-                <div className="mt-5 grid grid-cols-1 gap-3">
+              <div className="p-8 bg-background">
+                <div className="grid grid-cols-1 gap-5">
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground mb-1 block">Nombres</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 block">Nombres</label>
                     <input
-                      className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="border border-border rounded-xl px-4 py-2.5 bg-card w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-sm font-medium transition-all"
                       value={editNombres}
                       onChange={(e) => setEditNombres(e.target.value)}
                       disabled={editSubmitting}
@@ -648,9 +655,9 @@ export default function GestionUsuariosPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground mb-1 block">Apellidos</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 block">Apellidos</label>
                     <input
-                      className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="border border-border rounded-xl px-4 py-2.5 bg-card w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-sm font-medium transition-all"
                       value={editApellidos}
                       onChange={(e) => setEditApellidos(e.target.value)}
                       disabled={editSubmitting}
@@ -658,11 +665,11 @@ export default function GestionUsuariosPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground mb-1 block">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 block">
                       Teléfono (opcional)
                     </label>
                     <input
-                      className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="border border-border rounded-xl px-4 py-2.5 bg-card w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-sm font-medium transition-all"
                       value={editTelefono}
                       onChange={(e) => setEditTelefono(e.target.value)}
                       disabled={editSubmitting}
@@ -670,9 +677,9 @@ export default function GestionUsuariosPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground mb-1 block">Rol</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 block">Rol</label>
                     <select
-                      className="border border-border rounded-lg px-4 py-2 bg-background w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="border border-border rounded-xl px-4 py-2.5 bg-card w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-sm font-bold text-foreground appearance-none cursor-pointer transition-all"
                       value={editRole}
                       onChange={(e) => setEditRole(e.target.value as RoleValue)}
                       disabled={editSubmitting}
@@ -686,15 +693,10 @@ export default function GestionUsuariosPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-2">
+                <div className="mt-8 pt-6 border-t border-border flex justify-end gap-3">
                   <button
                     type="button"
-                    className={cn(
-                      "px-5 py-2 rounded-full font-bold shadow-sm transition-all duration-200",
-                      "bg-muted hover:bg-muted/80 text-foreground border border-border/60",
-                      "focus:outline-none focus:ring-2 focus:ring-ring",
-                      editSubmitting ? "opacity-60 cursor-not-allowed" : ""
-                    )}
+                    className="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-sm bg-card hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-colors disabled:opacity-50"
                     onClick={() => setEditOpen(false)}
                     disabled={editSubmitting}
                   >
@@ -703,23 +705,18 @@ export default function GestionUsuariosPage() {
 
                   <button
                     type="button"
-                    className={cn(
-                      "px-5 py-2 rounded-full font-bold shadow-sm transition-all duration-200",
-                      "bg-primary hover:bg-primary/90 text-primary-foreground",
-                      "focus:outline-none focus:ring-2 focus:ring-ring",
-                      editSubmitting ? "opacity-60 cursor-not-allowed" : ""
-                    )}
+                    className="px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-md bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
                     onClick={saveEdit}
                     disabled={editSubmitting}
                   >
                     {editSubmitting ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin inline-block mr-2" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                         Guardando…
                       </>
                     ) : (
                       <>
-                        <Save className="h-4 w-4 inline-block mr-2" />
+                        <Save className="h-4 w-4" />
                         Guardar
                       </>
                     )}

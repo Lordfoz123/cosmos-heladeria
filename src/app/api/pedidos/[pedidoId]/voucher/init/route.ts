@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { adminBucket, adminDb } from "@/lib/firebaseAdmin";
 
+// Cambiamos la definición para que 'params' sea una Promesa
 export async function POST(
   req: Request,
-  { params }: { params: { pedidoId: string } }
+  { params }: { params: Promise<{ pedidoId: string }> } 
 ) {
-  const { pedidoId } = params;
+  // Ahora "esperamos" a que lleguen los parámetros
+  const { pedidoId } = await params;
 
   const body = await req.json().catch(() => ({}));
   const token = String(body?.token ?? "");

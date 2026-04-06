@@ -17,6 +17,7 @@ import {
   Loader2,
   ExternalLink,
   Trash2,
+  BarChart3 // 🔥 Importamos el icono
 } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -81,6 +82,9 @@ export default function ShopHeader() {
   const wishlistRef = useRef<HTMLDivElement | null>(null);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
+  // 🔥 LÓGICA DE ADMINISTRADOR ACTUALIZADA 🔥
+  const isAdmin = user?.email === "lordfoz1@gmail.com"; 
+
   const cartCount = useMemo(() => {
     return (carrito ?? []).reduce((acc: number, item: any) => {
       const c = Number(item?.cantidad);
@@ -93,7 +97,6 @@ export default function ShopHeader() {
   const photoURL = user?.photoURL ?? "";
   const initials = initialsFromUser(displayName, email);
 
-  // cerrar wishlist cuando haces click afuera
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (!wishlistOpen) return;
@@ -106,28 +109,43 @@ export default function ShopHeader() {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [wishlistOpen]);
 
-  // cargar wishlist por usuario
+  // 🔥 LÓGICA DE WISHLIST EN TIEMPO REAL 🔥
   useEffect(() => {
-    if (!user) {
-      setWishlist([]);
-      setWishlistOpen(false);
-      return;
-    }
-    try {
-      const key = `wishlist:${user.uid}`;
-      const raw = localStorage.getItem(key);
-      const parsed = raw ? (JSON.parse(raw) as WishlistItem[]) : [];
-      setWishlist(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      setWishlist([]);
-    }
+    // Función para leer y actualizar la wishlist desde localStorage
+    const updateWishlistFromStorage = () => {
+        if (!user) {
+            setWishlist([]);
+            return;
+        }
+        try {
+            const key = `wishlist:${user.uid}`;
+            const raw = localStorage.getItem(key);
+            const parsed = raw ? (JSON.parse(raw) as WishlistItem[]) : [];
+            setWishlist(Array.isArray(parsed) ? parsed : []);
+        } catch {
+            setWishlist([]);
+        }
+    };
+
+    // 1. Carga inicial
+    updateWishlistFromStorage();
+
+    // 2. Escuchar el evento personalizado que disparamos desde TiendaOnline
+    window.addEventListener("wishlistUpdated", updateWishlistFromStorage);
+
+    // 3. Limpiar el listener cuando el componente se desmonte
+    return () => window.removeEventListener("wishlistUpdated", updateWishlistFromStorage);
+    
   }, [user?.uid]);
 
+  // Función para eliminar desde el header (también debe emitir el evento para que la tarjeta se actualice)
   function persistWishlist(next: WishlistItem[]) {
     if (!user) return;
     setWishlist(next);
     try {
       localStorage.setItem(`wishlist:${user.uid}`, JSON.stringify(next));
+      // 🔥 Emitimos el evento para mantener todo sincronizado en ambas direcciones
+      window.dispatchEvent(new CustomEvent("wishlistUpdated")); 
     } catch {
       // ignore
     }
@@ -164,11 +182,15 @@ export default function ShopHeader() {
     router.push("/wishlist");
   }
 
+  function goDashboard() {
+    setDropdownOpen(false);
+    router.push("/dashboard"); 
+  }
+
   const wishlistPreview = wishlist.slice(0, 4);
 
   return (
     <header className="sticky top-0 z-40">
-      {/* ✅ IMPORTANTE: limitar ancho para que se alinee con el hero (no full width) */}
       <div className="max-w-[1400px] mx-auto px-4 pt-3">
         <div className="h-16 rounded-2xl border border-border/60 bg-card/70 text-card-foreground backdrop-blur-md shadow-sm flex items-center justify-between px-4">
           <Link href="/tienda" className="flex items-center gap-3">
@@ -204,7 +226,6 @@ export default function ShopHeader() {
               </Button>
             )}
 
-            {/* Wishlist dropdown (solo logeado) */}
             {user && (
               <div className="relative" ref={wishlistRef}>
                 <button
@@ -214,9 +235,9 @@ export default function ShopHeader() {
                   aria-label="Wishlist"
                   title="Wishlist"
                 >
-                  <Heart className="h-5 w-5 text-muted-foreground" />
+                  <Heart className={`h-5 w-5 ${wishlist.length > 0 ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
                   {wishlist.length > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-[11px] font-extrabold grid place-items-center border border-background">
+                    <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-extrabold grid place-items-center shadow-sm">
                       {wishlist.length > 9 ? "9+" : wishlist.length}
                     </span>
                   )}
@@ -233,7 +254,7 @@ export default function ShopHeader() {
                     >
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
                         <div>
-                          <div className="font-extrabold">Wishlist</div>
+                          <div className="font-extrabold">Favoritos</div>
                           <div className="text-xs text-muted-foreground">
                             {wishlist.length === 0
                               ? "Aún no tienes favoritos"
@@ -254,27 +275,26 @@ export default function ShopHeader() {
 
                       <div className="max-h-[320px] overflow-auto">
                         {wishlist.length === 0 ? (
-                          <div className="p-6 text-sm text-muted-foreground">
-                            Guarda tus productos favoritos tocando el corazón en
-                            cada producto.
+                          <div className="p-6 text-sm text-muted-foreground text-center">
+                            Guarda tus productos favoritos tocando el corazón.
                           </div>
                         ) : (
                           <div className="p-2">
                             {wishlistPreview.map((w) => (
                               <div
                                 key={w.id}
-                                className="flex items-center gap-3 rounded-xl p-3 hover:bg-muted/60 transition"
+                                className="flex items-center gap-3 rounded-xl p-3 hover:bg-muted/60 transition group"
                               >
-                                <div className="h-11 w-11 rounded-xl overflow-hidden border border-border/60 bg-muted shrink-0">
+                                <div className="h-11 w-11 rounded-xl overflow-hidden border border-border/60 bg-white shrink-0 p-1">
                                   <img
                                     src={w.imagen || "/placeholder.png"}
                                     alt={w.nombre}
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-contain"
                                   />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <div className="font-bold text-sm truncate">
+                                  <div className="font-bold text-sm truncate uppercase tracking-tight">
                                     {w.nombre}
                                   </div>
                                 </div>
@@ -282,11 +302,11 @@ export default function ShopHeader() {
                                 <button
                                   type="button"
                                   onClick={() => removeWishlistItem(w.id)}
-                                  className="rounded-full h-9 w-9 grid place-items-center border border-border/60 bg-background/60 hover:bg-muted transition"
+                                  className="rounded-full h-9 w-9 grid place-items-center bg-white border border-border hover:border-red-200 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                                   title="Quitar"
                                   aria-label="Quitar"
                                 >
-                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                  <Trash2 className="h-4 w-4 text-slate-400 hover:text-red-500" />
                                 </button>
                               </div>
                             ))}
@@ -299,7 +319,6 @@ export default function ShopHeader() {
               </div>
             )}
 
-            {/* Carrito */}
             <button
               type="button"
               onClick={() => setShowCart(true)}
@@ -308,10 +327,10 @@ export default function ShopHeader() {
               title="Carrito"
             >
               <ShoppingBag className="h-4 w-4" />
-              Carrito
+              <span className="hidden sm:inline">Carrito</span>
 
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-6 h-6 px-1 rounded-full bg-primary text-primary-foreground text-[11px] font-extrabold grid place-items-center border border-background">
+                <span className="absolute -top-2 -right-2 min-w-6 h-6 px-1 rounded-full bg-primary text-primary-foreground text-[11px] font-extrabold grid place-items-center shadow-sm">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
@@ -327,7 +346,7 @@ export default function ShopHeader() {
                 disabled={authLoading}
               >
                 <LogIn className="h-4 w-4" />
-                Iniciar sesión
+                <span className="hidden sm:inline">Iniciar sesión</span>
               </button>
             ) : (
               <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -372,11 +391,29 @@ export default function ShopHeader() {
 
                   <DropdownMenuSeparator />
 
+                  {/* 🔥 BOTÓN DEL DASHBOARD (AHORA SÍ TE VA A APARECER) 🔥 */}
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          goDashboard();
+                        }}
+                        className="font-medium cursor-pointer"
+                      >
+                        <BarChart3 className="mr-2 h-4 w-4 text-emerald-500" />
+                        Panel Administrativo
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+
                   <DropdownMenuItem
                     onSelect={(e) => {
                       e.preventDefault();
                       goCuenta();
                     }}
+                    className="cursor-pointer"
                   >
                     <User className="mr-2 h-4 w-4" />
                     Mi cuenta
@@ -388,7 +425,7 @@ export default function ShopHeader() {
                       doLogout();
                     }}
                     disabled={loggingOut}
-                    className="text-destructive focus:text-destructive"
+                    className="text-destructive focus:text-destructive cursor-pointer"
                   >
                     {loggingOut ? (
                       <>

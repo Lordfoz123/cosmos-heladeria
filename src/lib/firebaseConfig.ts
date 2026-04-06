@@ -12,8 +12,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
+// Singleton para evitar errores en Next.js al recargar
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
-export const storage = getStorage(app);
+export const storage = getStorage(app); // <--- Esto es lo que habilitará las fotos
 export const auth = getAuth(app);

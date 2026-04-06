@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Search, Sun, Moon, User, LogOut } from "lucide-react";
+import { Sun, Moon, LogOut, Menu, BarChart3 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { auth } from "@/lib/firebaseConfig";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image"; 
 
 import {
   DropdownMenu,
@@ -20,6 +20,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
 
 function withThemeTransition(run: () => void) {
   const root = document.documentElement;
@@ -32,35 +36,26 @@ function initialsFromUser(displayName?: string | null, email?: string | null) {
   const name = (displayName || "").trim();
   if (name) {
     const parts = name.split(/\s+/).filter(Boolean);
-    const first = parts[0]?.[0] ?? "A";
-    const second = parts[1]?.[0] ?? (parts[0]?.[1] ?? "");
-    return (first + second).toUpperCase();
+    return (parts[0]?.[0] ?? "A").toUpperCase() + (parts[1]?.[0] ?? "").toUpperCase();
   }
-
-  const e = (email || "").trim();
-  if (e) {
-    const local = e.split("@")[0] || "A";
-    return (local.slice(0, 2) || "A").toUpperCase();
-  }
-
-  return "A";
+  return (email?.slice(0, 2) || "A").toUpperCase();
 }
 
-export function Header() {
+export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
-
   const { theme, setTheme, resolvedTheme } = useTheme();
+  
   const isDark = (resolvedTheme ?? theme) === "dark";
+  const logoSrc = isDark ? "/brand/logo-cosmos-dark.png" : "/brand/logo-cosmos.png";
 
   const { user } = useAuth();
-  const email = user?.email ?? "";
-  const displayName = user?.displayName ?? "";
-  const photoURL = user?.photoURL ?? "";
-  const initials = initialsFromUser(displayName, email);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // 🔥 LÓGICA DE ADMINISTRADOR CON TU CORREO REAL 🔥
+  const isAdmin = user?.email === "lordfoz1@gmail.com"; 
 
   async function doLogout() {
     try {
@@ -73,114 +68,90 @@ export function Header() {
     }
   }
 
+  const initials = initialsFromUser(user?.displayName, user?.email);
+
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border/60 bg-card/85 text-card-foreground px-6 backdrop-blur-md shadow-sm">
-        {/* Search */}
-        <div className="flex flex-1 items-center gap-4">
-          <div className="relative w-96 max-w-full">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar sabores, ventas, pedidos..."
-              className="pl-10 bg-background text-foreground border-border/60 focus-visible:ring-ring"
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border/60 bg-card/85 text-card-foreground px-4 md:px-6 backdrop-blur-md shadow-sm w-full">
+        
+        {/* LADO IZQUIERDO: Logo (solo móvil) + Menú Móvil */}
+        <div className="flex items-center gap-2 flex-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden rounded-lg hover:bg-muted"
+            onClick={onMenuClick}
+          >
+            <Menu className="h-6 w-6 text-foreground" />
+          </Button>
+
+          <div className="md:hidden flex items-center mr-2">
+            <Image 
+              src={logoSrc} 
+              alt="Cosmos Logo" 
+              width={32} 
+              height={32} 
+              className="object-contain"
             />
           </div>
         </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Theme toggle */}
+        {/* LADO DERECHO: Acciones */}
+        <div className="flex items-center gap-1 sm:gap-3">
+          
           <Button
             variant="ghost"
             size="icon"
-            onClick={() =>
-              withThemeTransition(() => setTheme(isDark ? "light" : "dark"))
-            }
-            className="rounded-full border border-transparent hover:border-border/60 hover:bg-muted"
-            aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            title={isDark ? "Modo claro" : "Modo oscuro"}
-            type="button"
+            onClick={() => withThemeTransition(() => setTheme(isDark ? "light" : "dark"))}
+            className="rounded-full hover:bg-muted"
           >
-            {isDark ? (
-              <Sun className="h-5 w-5 text-muted-foreground" />
-            ) : (
-              <Moon className="h-5 w-5 text-muted-foreground" />
-            )}
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
 
-          {/* Notifications (placeholder) */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative rounded-full border border-transparent hover:border-border/60 hover:bg-muted"
-            aria-label="Notificaciones"
-            type="button"
-          >
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-card" />
-          </Button>
-
-          {/* User dropdown */}
-          <div className="flex items-center gap-3 border-l border-border/60 pl-4">
+          {/* Perfil */}
+          <div className="ml-1 sm:ml-2 pl-2 sm:pl-4 border-l border-border/60">
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center gap-3 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label="Menú de usuario"
-                >
-                  <Avatar className="h-9 w-9 ring-1 ring-border/60">
-                    <AvatarImage
-                      src={photoURL || undefined}
-                      alt={displayName || email || "Usuario"}
-                    />
-                    <AvatarFallback className="bg-primary/20 text-foreground">
-                      {user ? (
-                        <span className="text-xs font-extrabold">{initials}</span>
-                      ) : (
-                        <User className="h-5 w-5" />
-                      )}
+                <button className="flex items-center gap-3 rounded-full outline-none group">
+                  <Avatar className="h-9 w-9 ring-1 ring-border/60 group-hover:ring-primary transition-all">
+                    <AvatarImage src={user?.photoURL || undefined} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                      {initials}
                     </AvatarFallback>
                   </Avatar>
-
-                  <div className="text-sm leading-tight hidden sm:block text-left">
-                    <p className="font-semibold text-foreground">
-                      {displayName || (email ? email.split("@")[0] : "Invitado")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {email || "Sin sesión"}
-                    </p>
+                  <div className="hidden lg:block text-left leading-tight">
+                    <p className="text-sm font-bold truncate max-w-[120px]">{user?.displayName || "Usuario"}</p>
+                    <p className="text-[11px] text-muted-foreground truncate max-w-[120px]">{user?.email}</p>
                   </div>
                 </button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold">
-                      {displayName || (email ? email.split("@")[0] : "Invitado")}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {email || "Sin sesión"}
-                    </span>
-                  </div>
+              <DropdownMenuContent align="end" className="w-56 mt-2">
+                <DropdownMenuLabel className="lg:hidden">
+                    <p className="text-sm font-bold">{user?.displayName || "Usuario"}</p>
+                    <p className="text-[11px] text-muted-foreground">{user?.email}</p>
                 </DropdownMenuLabel>
+                
+                <DropdownMenuSeparator className="lg:hidden" />
+                
+                {/* 🔥 PESTAÑA DE DASHBOARD PARA ADMINS 🔥 */}
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        router.push("/dashboard"); 
+                      }} 
+                      className="cursor-pointer font-medium"
+                    >
+                      <BarChart3 className="mr-2 h-4 w-4 text-emerald-500" />
+                      Ir al Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
 
-                <DropdownMenuSeparator />
-
-                {/* ✅ Logout en rojo + cierra dropdown antes de abrir modal */}
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    if (!user) return;
-
-                    setDropdownOpen(false); // 👈 cierra el menú
-                    // pequeño delay opcional para que la animación del dropdown termine
-                    window.setTimeout(() => setConfirmOpen(true), 50);
-                  }}
-                  disabled={!user}
-                  className="text-destructive focus:text-destructive"
-                >
+                <DropdownMenuItem onClick={() => setConfirmOpen(true)} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   Cerrar sesión
                 </DropdownMenuItem>
@@ -190,85 +161,37 @@ export function Header() {
         </div>
       </header>
 
-      {/* Modal confirm (misma línea gráfica que tus modales) */}
+      {/* Modal de Logout */}
       <AnimatePresence>
         {confirmOpen && (
           <motion.div
-            className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[3px] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.14 } }}
-            onClick={() => (loggingOut ? null : setConfirmOpen(false))}
+            exit={{ opacity: 0 }}
+            onClick={() => !loggingOut && setConfirmOpen(false)}
           >
             <motion.div
-              className="bg-card text-card-foreground w-full max-w-md rounded-2xl shadow-2xl relative border border-border/60 p-0"
-              initial={{ opacity: 0, y: 38, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 35, scale: 0.97 }}
-              transition={{
-                duration: 0.32,
-                type: "spring",
-                damping: 20,
-                stiffness: 210,
-              }}
+              className="bg-card w-full max-w-sm rounded-3xl shadow-2xl border border-border p-6"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close X */}
-              <button
-                className="absolute top-5 right-7 text-2xl text-muted-foreground hover:text-foreground transition disabled:opacity-50"
-                onClick={() => setConfirmOpen(false)}
-                aria-label="Cerrar"
-                type="button"
-                disabled={loggingOut}
-              >
-                ×
-              </button>
-
-              <div className="p-7">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 rounded-full bg-destructive/15 text-destructive border border-destructive/20 p-2">
-                    <LogOut className="h-5 w-5" />
-                  </div>
-
-                  <div className="flex-1">
-                    <h3 className="font-extrabold text-xl text-foreground">
-                      ¿Cerrar sesión?
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Vas a salir del panel. Luego tendrás que iniciar sesión de
-                      nuevo.
-                    </p>
-                  </div>
+              <div className="text-center">
+                <div className="mb-4 flex justify-center">
+                   <Image src={logoSrc} alt="Cosmos" width={48} height={48} />
                 </div>
-
-                <div className="mt-6 flex justify-end gap-2">
-                  <button
-                    type="button"
-                    className={[
-                      "px-5 py-2 rounded-full font-bold shadow-sm transition-all duration-200",
-                      "bg-muted hover:bg-muted/80 text-foreground border border-border/60",
-                      "focus:outline-none focus:ring-2 focus:ring-ring",
-                      loggingOut ? "opacity-60 cursor-not-allowed" : "",
-                    ].join(" ")}
-                    onClick={() => setConfirmOpen(false)}
-                    disabled={loggingOut}
-                  >
+                <h3 className="text-xl font-bold mb-2">¿Cerrar sesión?</h3>
+                <p className="text-sm text-muted-foreground mb-6">Vas a salir del panel de Cosmos Heladería.</p>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={loggingOut} className="rounded-xl">
                     Cancelar
-                  </button>
-
-                  <button
-                    type="button"
-                    className={[
-                      "px-5 py-2 rounded-full font-bold shadow-sm transition-all duration-200",
-                      "bg-destructive hover:bg-destructive/90 text-destructive-foreground",
-                      "focus:outline-none focus:ring-2 focus:ring-ring",
-                      loggingOut ? "opacity-60 cursor-not-allowed" : "",
-                    ].join(" ")}
-                    onClick={doLogout}
-                    disabled={loggingOut}
-                  >
-                    {loggingOut ? "Cerrando..." : "Sí, cerrar sesión"}
-                  </button>
+                  </Button>
+                  <Button variant="destructive" onClick={doLogout} disabled={loggingOut} className="rounded-xl font-bold">
+                    {loggingOut ? "Cerrando..." : "Sí, salir"}
+                  </Button>
                 </div>
               </div>
             </motion.div>

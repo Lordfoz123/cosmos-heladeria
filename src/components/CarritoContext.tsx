@@ -18,7 +18,15 @@ type CartItem = {
   cantidad: number;
 };
 
+// 🔥 TIPO PARA EL WISHLIST AÑADIDO 🔥
+type WishlistItem = {
+  id: string;
+  nombre: string;
+  imagen?: string;
+};
+
 type CarritoContextType = {
+  // Carrito
   carrito: CartItem[];
   showCart: boolean;
   addToCart: (producto: Producto, tamaño: string) => void;
@@ -28,6 +36,11 @@ type CarritoContextType = {
   setShowCart: (show: boolean) => void;
   finalizarCompra: () => void;
   limpiarCarrito: () => void;
+  
+  // 🔥 WISHLIST AÑADIDO AL CONTEXTO 🔥
+  wishlist: WishlistItem[];
+  addToWishlist: (producto: any) => void;
+  removeFromWishlist: (id: string) => void;
 };
 
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
@@ -44,7 +57,6 @@ function safeParseCart(raw: string | null): CartItem[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
-    // Validación mínima para evitar romper la app por data vieja/corrupta
     return parsed
       .filter((x: any) => x && typeof x === "object")
       .map((x: any) => ({
@@ -64,34 +76,68 @@ function safeParseCart(raw: string | null): CartItem[] {
   }
 }
 
+// 🔥 FUNCIÓN PARA PARSEAR EL WISHLIST DE FORMA SEGURA 🔥
+function safeParseWishlist(raw: string | null): WishlistItem[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((x: any) => x && typeof x === "object" && x.id);
+  } catch {
+    return [];
+  }
+}
+
 export function CarritoProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user } = useAuth();
 
+  // ESTADOS DEL CARRITO
   const [carrito, setCarrito] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
 
-  const storageKey = useMemo(() => {
+  // 🔥 ESTADO DEL WISHLIST 🔥
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+
+  // KEYS DE ALMACENAMIENTO (Por usuario o por invitado)
+  const cartStorageKey = useMemo(() => {
     return user?.uid ? `cart:${user.uid}` : "cart:guest";
   }, [user?.uid]);
 
-  // ✅ Cargar carrito desde localStorage cuando cambia el usuario (o al montar)
-  useEffect(() => {
-    // localStorage solo existe en cliente
-    const raw = typeof window !== "undefined" ? window.localStorage.getItem(storageKey) : null;
-    setCarrito(safeParseCart(raw));
-  }, [storageKey]);
+  const wishlistStorageKey = useMemo(() => {
+    return user?.uid ? `wishlist:${user.uid}` : "wishlist:guest";
+  }, [user?.uid]);
 
-  // ✅ Persistir carrito en localStorage
+  // ✅ CARGAR DATOS DESDE LOCALSTORAGE AL INICIAR O CAMBIAR USUARIO
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const rawCart = window.localStorage.getItem(cartStorageKey);
+      setCarrito(safeParseCart(rawCart));
+
+      const rawWishlist = window.localStorage.getItem(wishlistStorageKey);
+      setWishlist(safeParseWishlist(rawWishlist));
+    }
+  }, [cartStorageKey, wishlistStorageKey]);
+
+  // ✅ PERSISTIR CARRITO EN LOCALSTORAGE
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify(carrito ?? []));
-    } catch {
-      // ignore (quota, private mode, etc)
-    }
-  }, [carrito, storageKey]);
+      window.localStorage.setItem(cartStorageKey, JSON.stringify(carrito ?? []));
+    } catch {}
+  }, [carrito, cartStorageKey]);
 
+  // 🔥 PERSISTIR WISHLIST EN LOCALSTORAGE 🔥
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(wishlistStorageKey, JSON.stringify(wishlist ?? []));
+    } catch {}
+  }, [wishlist, wishlistStorageKey]);
+
+  // ==========================================
+  // FUNCIONES DEL CARRITO
+  // ==========================================
   function addToCart(producto: Producto, tamaño: string) {
     if (!tamaño) return;
 
@@ -124,7 +170,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
 
   function finalizarCompra() {
     setShowCart(false);
-    router.push("/checkout"); // Solo navega a checkout
+    router.push("/checkout"); 
   }
 
   function limpiarCarrito() {
@@ -135,9 +181,24 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     return carrito.reduce((acc, item) => acc + item.producto.precio * item.cantidad, 0);
   }, [carrito]);
 
+  // ==========================================
+  // 🔥 FUNCIONES DEL WISHLIST 🔥
+  // ==========================================
+  function addToWishlist(producto: any) {
+    setWishlist((prev) => {
+      if (prev.some((w) => w.id === producto.id)) return prev; // Si ya existe, no lo duplica
+      return [...prev, { id: producto.id, nombre: producto.nombre, imagen: producto.imagen }];
+    });
+  }
+
+  function removeFromWishlist(id: string) {
+    setWishlist((prev) => prev.filter((w) => w.id !== id));
+  }
+
   return (
     <CarritoContext.Provider
       value={{
+        // Carrito
         carrito,
         showCart,
         addToCart,
@@ -147,6 +208,11 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
         setShowCart,
         finalizarCompra,
         limpiarCarrito,
+        
+        // Wishlist
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
       }}
     >
       {children}

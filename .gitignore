@@ -73,3 +73,4 @@ secrets/
 
 # Next.js
 .next/
+.vercel
