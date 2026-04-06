@@ -42,31 +42,28 @@ const TAG_CONFIG: Record<string, { icon: any, color: string, text: string }> = {
 const HERO_SLIDES = [
   {
     id: 1,
-    etiquetas: ["100% Plant-Based", "Con Azúcar"],
     title: "El futuro del helado es",
     titleHighlight: "Consciente",
     description: "Helados veganos artesanales, libres de lácteos y amigables con el planeta. La cremosidad que amas, sin sacrificar nada.",
-    bgImage: "bg1.jpg", 
+    bgImage: "bg1.webp", 
     ctaText: "Visitar Tienda",
     ctaLink: "/tienda" 
   },
   {
     id: 2,
-    etiquetas: ["100% Vegano", "Sin Azúcar Añadida"],
     title: "Placer puro",
     titleHighlight: "Sin Culpa",
     description: "Disfruta de nuestra línea zero azúcar. Ingredientes 100% naturales para un estilo de vida saludable y delicioso.",
-    bgImage: "bg2.jpg",
+    bgImage: "bg2.webp",
     ctaText: "Pedir Chocolate Zero",
-    ctaLink: "/producto/ID_DEL_PRODUCTO_CHOCOLATE_ZERO"
+    ctaLink: "/tienda"
   },
   {
     id: 3,
-    etiquetas: ["Sabores Únicos", "Con Azúcar"],
     title: "Reinventamos la",
     titleHighlight: "Tradición",
     description: "Una textura increíblemente cremosa que compite directamente con el helado tradicional, pero con puros valores agregados.",
-    bgImage: "bg3.jpg",
+    bgImage: "bg3.webp",
     ctaText: "Ver Catálogo Completo",
     ctaLink: "/tienda"
   }

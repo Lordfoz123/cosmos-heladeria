@@ -9,8 +9,8 @@ import HeaderCosmos from "@/components/HeaderCosmos";
 // 🔥 RUTAS DE TUS FOTOS LOCALES 🔥
 // (Asegúrate de guardar fotos con estos nombres en la carpeta public/ de tu proyecto)
 const FOTOS_NOSOTROS = [
-  "/nosotros1.jpg", 
-  "/nosotros2.jpg"
+  "/nosotros1.webp", 
+  "/nosotros2.webp"
 ];
 
 // Fallback por si aún no has subido las fotos (fotos de Unsplash provisionales)
