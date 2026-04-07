@@ -14,6 +14,12 @@ import ShopFooter from "@/components/ShopFooter";
 export const metadata: Metadata = {
   title: "Cosmos - Infinitas Posibilidades",
   description: "Sistema de gestión de inventario y ventas para heladería",
+  // 🔥 AGREGAMOS ESTO PARA EL FAVICON 🔥
+  icons: {
+    icon: "/favicon.png", // Busca el archivo en la carpeta 'public'
+    shortcut: "/favicon.png",
+    apple: "/favicon.png", // Para que se vea pro si lo guardan en el celular
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
