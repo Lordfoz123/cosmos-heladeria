@@ -14,11 +14,11 @@ import ShopFooter from "@/components/ShopFooter";
 export const metadata: Metadata = {
   title: "Cosmos - Infinitas Posibilidades",
   description: "Sistema de gestión de inventario y ventas para heladería",
-  // 🔥 AGREGAMOS ESTO PARA EL FAVICON 🔥
+  // 🔥 TRUCO ANTI-CACHÉ: Agregamos ?v=2 para forzar la actualización 🔥
   icons: {
-    icon: "/favicon.png", // Busca el archivo en la carpeta 'public'
-    shortcut: "/favicon.png",
-    apple: "/favicon.png", // Para que se vea pro si lo guardan en el celular
+    icon: "/favicon.png?v=2", 
+    shortcut: "/favicon.png?v=2",
+    apple: "/favicon.png?v=2", 
   },
 };
 
