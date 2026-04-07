@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation";
 import { collection, onSnapshot, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
-// 🔥 CONFIGURACIÓN DE ETIQUETAS (BADGES) 🔥
+// 🔥 CONFIGURACIÓN DE ETIQUETAS (SE MANTIENE PARA LOS PRODUCTOS) 🔥
 const TAG_CONFIG: Record<string, { icon: any, color: string, text: string }> = {
     "Sin Azúcar": { icon: Cuboid, color: "text-blue-500 bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-500/40", text: "Sin Azúcar" },
     "Sin Lácteos": { icon: MilkOff, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/20 border-emerald-200 dark:border-emerald-500/40", text: "Sin Lácteos" },
@@ -38,7 +38,7 @@ const TAG_CONFIG: Record<string, { icon: any, color: string, text: string }> = {
     "Sin Soya": { icon: Leaf, color: "text-rose-500 bg-rose-50 dark:bg-rose-500/20 border-rose-200 dark:border-rose-500/40", text: "Sin Soya" },
 };
 
-// 🔥 DATOS DEL SLIDER PRINCIPAL ESTÁTICO (ARRIBA) 🔥
+// 🔥 DATOS DEL SLIDER PRINCIPAL (LIMPIOS) 🔥
 const HERO_SLIDES = [
   {
     id: 1,
@@ -214,7 +214,7 @@ export default function HomePage() {
         <HeaderCosmos /> 
       </div>
 
-      {/* 1. HERO SLIDER ESTÁTICO (ARRIBA) */}
+      {/* 1. HERO SLIDER (ETIQUETAS ELIMINADAS) */}
       <section className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 w-full h-full z-0">
           <AnimatePresence>
@@ -243,17 +243,7 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.2 }} 
                 className="space-y-6"
               >
-                <div className="flex flex-wrap items-center gap-3">
-                  {slide.etiquetas.map((etiqueta, idx) => (
-                    <div 
-                      key={idx} 
-                      className="inline-flex items-center gap-2 bg-[#bcd4dc]/20 backdrop-blur-md border border-[#bcd4dc]/50 px-4 py-1.5 rounded-full text-[#bcd4dc] text-[11px] font-bold tracking-wide shadow-sm"
-                    >
-                      {etiqueta.includes("Azúcar") ? <Cuboid className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
-                      {etiqueta}
-                    </div>
-                  ))}
-                </div>
+                {/* AQUI YA NO ESTÁN LAS ETIQUETAS */}
 
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[1.05]">
                   {slide.title} <br />
@@ -287,7 +277,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS */}
+      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS (TODO EL DISEÑO ORIGINAL SE MANTIENE) */}
       <section className="relative z-20 w-full overflow-hidden pb-32 pt-20">
         <div className="max-w-[1400px] mx-auto px-6 mb-10 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-2 transition-colors duration-300">Descubre la Experiencia</h2>
@@ -307,7 +297,7 @@ export default function HomePage() {
                         return (
                             <motion.div key={`slider-${sabor.id}-${index}`} whileHover={{ y: -8 }} className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative">
                                 
-                                {/* 🔥 AQUI VAN LAS ETIQUETAS QUE EDITAS EN EL MODAL 🔥 */}
+                                {/* 🔥 LAS ETIQUETAS AQUÍ SI SE MANTIENEN 🔥 */}
                                 {sabor.etiquetas && sabor.etiquetas.length > 0 && (
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5">
                                         {sabor.etiquetas.map((etiquetaId: string) => {
