@@ -48,7 +48,7 @@ export default function CapacitacionesPage() {
   async function fetchCapacitaciones() {
     setLoading(true);
     try {
-      const q = query(collection(db, "capacitaciones"), orderBy("fechaSubida", "desc"));
+      const q = query(collection(db, "capacitaciones"));
       const snap = await getDocs(q);
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Capacitacion));
       setCapacitaciones(data);
