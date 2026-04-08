@@ -8,13 +8,22 @@ import CartSlider from "@/components/CartSlider";
 import { Card, CardContent } from "@/components/ui/card";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import { Heart, ShoppingCart, Sparkles, LogIn, X, Loader2 } from "lucide-react";
+// 🔥 1. Agregamos los íconos de las etiquetas aquí 🔥
+import { Heart, ShoppingCart, Sparkles, LogIn, X, Loader2, Cuboid, MilkOff, WheatOff, Leaf } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import HeaderCosmos from "@/components/HeaderCosmos";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-// 1. Configuración de visualización de potes
+// 🔥 2. TRAEMOS LA CONFIGURACIÓN DE ETIQUETAS 🔥
+const TAG_CONFIG: Record<string, { icon: any, color: string, text: string }> = {
+    "Sin Azúcar": { icon: Cuboid, color: "text-blue-500 bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-500/40", text: "Sin Azúcar" },
+    "Sin Lácteos": { icon: MilkOff, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/20 border-emerald-200 dark:border-emerald-500/40", text: "Sin Lácteos" },
+    "Sin Gluten": { icon: WheatOff, color: "text-amber-500 bg-amber-50 dark:bg-amber-500/20 border-amber-200 dark:border-amber-500/40", text: "Sin Gluten" },
+    "Sin Soya": { icon: Leaf, color: "text-rose-500 bg-rose-50 dark:bg-rose-500/20 border-rose-200 dark:border-rose-500/40", text: "Sin Soya" },
+};
+
+// Configuración de visualización de potes
 const IMAGENES_TAMANOS: Record<string, string> = {
     '8oz':  '/icons/pote-8oz.png',
     '16oz': '/icons/pote-16oz.png',
@@ -113,7 +122,7 @@ export default function TiendaOnline() {
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto">
-          {/* 🔥 HERO CORREGIDO 🔥 */}
+          {/* HERO */}
           <div className="px-6 mt-10 mb-16">
             <div className="relative overflow-hidden rounded-[3rem] bg-black h-[400px] flex items-center shadow-lg dark:shadow-2xl group transition-all duration-300">
                 
@@ -241,12 +250,31 @@ function ProductoTiendaCard({ prod, onToggleWishlist, isWishlisted, addToCart }:
   const tamanosDisponibles = (prod.tamanos || []).filter((t: any) => t.precio > 0);
 
   return (
-    <Card className="group rounded-[2.5rem] border-0 shadow-xl hover:shadow-2xl dark:border dark:border-white/5 dark:shadow-none bg-white dark:bg-[#0B0F19] overflow-hidden transition-all duration-500 hover:-translate-y-2 flex flex-col h-full">
+    <Card className="group rounded-[2.5rem] border-0 shadow-xl hover:shadow-2xl dark:border dark:border-white/5 dark:shadow-none bg-white dark:bg-[#0B0F19] overflow-hidden transition-all duration-500 hover:-translate-y-2 flex flex-col h-full relative">
+      
+      {/* 🔥 3. RENDERIZADO DE ETIQUETAS SOBRE LA IMAGEN 🔥 */}
+      {prod.etiquetas && prod.etiquetas.length > 0 && (
+          <div className="absolute top-6 left-6 z-30 flex flex-col gap-1.5 pointer-events-none">
+              {prod.etiquetas.map((etiquetaId: string) => {
+                  const tagData = TAG_CONFIG[etiquetaId];
+                  if (!tagData) return null;
+                  const Icon = tagData.icon;
+                  return (
+                      <div key={etiquetaId} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-sm ${tagData.color}`}>
+                          <Icon className="w-3 h-3" />
+                          {tagData.text}
+                      </div>
+                  );
+              })}
+          </div>
+      )}
+
       <div className="relative aspect-[4/5] overflow-hidden bg-slate-50 dark:bg-[#030712] m-2 rounded-[2.2rem] transition-colors duration-300">
         <Link href={`/producto/${prod.id}`} className="block w-full h-full">
             <img src={prod.imagen || "/icons/pote-16oz.png"} alt={prod.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/5 dark:from-[#030712] via-transparent to-transparent opacity-80" />
         </Link>
+        
         <button 
           onClick={onToggleWishlist}
           className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center transition-colors border shadow-sm ${isWishlisted ? 'bg-pink-50 dark:bg-pink-500/20 border-pink-200 dark:border-pink-500/40 text-pink-500' : 'bg-white/80 dark:bg-black/40 backdrop-blur-md border-slate-200 dark:border-white/10 text-slate-700 dark:text-white hover:bg-white dark:hover:bg-black/60'}`}
