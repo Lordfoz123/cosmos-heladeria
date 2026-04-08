@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { db, storage } from "@/lib/firebaseConfig";
 import { collection, addDoc, getDocs, deleteDoc, doc, Timestamp, query, orderBy } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // 🔥 Importación de Auth
 import {
   Dialog,
   DialogContent,
@@ -41,20 +42,45 @@ export default function CapacitacionesPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // 🔥 1. EFECTO ACTUALIZADO: Espera a que Auth esté listo
   useEffect(() => {
-    fetchCapacitaciones();
+    const auth = getAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchCapacitaciones();
+      } else {
+        setCapacitaciones([]);
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   async function fetchCapacitaciones() {
     setLoading(true);
     try {
-      const q = query(collection(db, "capacitaciones"));
+      // 🔥 Volvemos a poner el orderBy para que se vean ordenados
+      const q = query(collection(db, "capacitaciones"), orderBy("fechaSubida", "desc"));
       const snap = await getDocs(q);
-      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Capacitacion));
+      
+      const data = snap.docs.map((d) => {
+        const item = d.data();
+        return { 
+          id: d.id, 
+          ...item,
+          fechaSubida: item.fechaSubida || Timestamp.now() 
+        } as Capacitacion;
+      });
+      
       setCapacitaciones(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error al cargar capacitaciones:", err);
-      toast.error("Error al cargar capacitaciones");
+      // Solo mostramos el toast si el error NO es por falta de usuario
+      if (err.code !== 'permission-denied') {
+         toast.error("Error al cargar capacitaciones");
+      }
     } finally {
       setLoading(false);
     }
@@ -94,33 +120,40 @@ export default function CapacitacionesPage() {
           setUploadProgress(Math.round(progress));
         },
         (error) => {
-          console.error("Error al subir:", error);
+          console.error("Error al subir Storage:", error);
           toast.error("Error al subir el archivo");
           setUploading(false);
         },
         async () => {
-          // Obtener URL
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          // 🔥 2. BLOQUE TRY/CATCH PARA FIRESTORE (Evita el bucle infinito)
+          try {
+            // Obtener URL de Storage
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
 
-          // Guardar metadata en Firestore
-          await addDoc(collection(db, "capacitaciones"), {
-            titulo:  titulo.trim(),
-            descripcion: descripcion.trim(),
-            url,
-            fileName,
-            fechaSubida: Timestamp.now(),
-            size: file.size,
-          });
+            // Guardar metadata en Firestore Database
+            await addDoc(collection(db, "capacitaciones"), {
+              titulo:  titulo.trim(),
+              descripcion: descripcion.trim(),
+              url,
+              fileName,
+              fechaSubida: Timestamp.now(),
+              size: file.size,
+            });
 
-          toast.success("Capacitación subida exitosamente");
-          setOpenDialog(false);
-          resetForm();
-          fetchCapacitaciones();
+            toast.success("Capacitación subida exitosamente");
+            setOpenDialog(false);
+            resetForm();
+            fetchCapacitaciones();
+          } catch (firestoreError: any) {
+            console.error("Error al guardar en Firestore:", firestoreError);
+            toast.error(`Base de datos bloqueada: Verifica tus Reglas`);
+            setUploading(false); // Apagamos el spinner para que no gire infinito
+          }
         }
       );
     } catch (err) {
-      console.error("Error:", err);
-      toast.error("Error al subir");
+      console.error("Error general:", err);
+      toast.error("Error al iniciar subida");
       setUploading(false);
     }
   }
