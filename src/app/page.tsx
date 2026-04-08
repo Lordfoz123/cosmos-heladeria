@@ -125,7 +125,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const q = query(collection(db, "productos_tienda"), where("activo", "==", true), limit(8));
+    const q = query(collection(db, "productos_tienda"), where("activo", "==", true), limit(20));
     const unsub = onSnapshot(q, (snap) => {
       setDestacados(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoadingDestacados(false);
