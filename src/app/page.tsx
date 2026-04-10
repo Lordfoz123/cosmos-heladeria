@@ -38,7 +38,7 @@ const TAG_CONFIG: Record<string, { icon: any, bg: string, text: string }> = {
     "Sin Soya": { icon: Leaf, bg: "bg-[#ec407a]", text: "Sin Soya" },          // Rosa chicle
 };
 
-// 🔥 DATOS DEL SLIDER PRINCIPAL (LIMPIOS) 🔥
+// 🔥 DATOS DEL SLIDER PRINCIPAL 🔥
 const HERO_SLIDES = [
   {
     id: 1,
@@ -194,7 +194,6 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-200 overflow-x-hidden font-sans selection:bg-[#bcd4dc]/30 transition-colors duration-300">
       
-      {/* FONDO ESPACIAL BASE */}
       <div className="hidden dark:block absolute inset-0 z-0 overflow-hidden pointer-events-none fixed">
         {stars.map((star) => (
           <motion.div 
@@ -214,7 +213,6 @@ export default function HomePage() {
         <HeaderCosmos /> 
       </div>
 
-      {/* 1. HERO SLIDER */}
       <section className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 w-full h-full z-0">
           <AnimatePresence>
@@ -275,7 +273,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS */}
       <section className="relative z-20 w-full overflow-hidden pb-32 pt-20">
         <div className="max-w-[1400px] mx-auto px-6 mb-10 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-2 transition-colors duration-300">Descubre la Experiencia</h2>
@@ -295,7 +292,7 @@ export default function HomePage() {
                         return (
                             <motion.div key={`slider-${sabor.id}-${index}`} whileHover={{ y: -8 }} className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative">
                                 
-                                {/* 🔥 STICKER: SOLO SIN AZÚCAR 🔥 */}
+                                {/* 🔥 STICKER: SOLO SIN AZÚCAR (Círculo puro) 🔥 */}
                                 {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-2 pointer-events-none">
                                         {sabor.etiquetas
@@ -307,13 +304,10 @@ export default function HomePage() {
                                             return (
                                                 <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[60px] h-[60px] rounded-full shadow-lg border-[3px] border-white dark:border-[#030712] ${tagData.bg}`}>
                                                     <div className="absolute inset-[3px] border border-dashed border-white/70 rounded-full" />
-                                                    
                                                     <Icon className="w-4 h-4 text-white z-10 mb-0.5" />
                                                     <span className="text-[7px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
                                                         {tagData.text}
                                                     </span>
-                                                    
-                                                    <div className="absolute -bottom-[3px] -right-[3px] w-[20px] h-[20px] bg-gradient-to-tl from-slate-200 to-white dark:from-slate-700 dark:to-slate-900 rounded-tl-[12px] rounded-br-full shadow-[-2px_-2px_4px_rgba(0,0,0,0.25)] z-20" />
                                                 </div>
                                             );
                                         })}
@@ -331,7 +325,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 3. NEWSLETTER */}
       <div className="relative z-20 max-w-5xl mx-auto px-6 pb-32">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 md:p-16 text-center shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-300">
           <Sparkles className="w-10 h-10 text-[#8ebccb] dark:text-[#bcd4dc] mx-auto mb-6" />
