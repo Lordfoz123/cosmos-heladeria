@@ -30,12 +30,12 @@ import { useRouter } from "next/navigation";
 import { collection, onSnapshot, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
-// 🔥 CONFIGURACIÓN DE ETIQUETAS (ESTILO STICKER SÓLIDO) 🔥
-const TAG_CONFIG: Record<string, { icon: any, bg: string, text: string }> = {
-    "Sin Azúcar": { icon: Cuboid, bg: "bg-[#29b6f6]", text: "Sin Azúcar" },   // Azul brillante
-    "Sin Lácteos": { icon: MilkOff, bg: "bg-[#8bc34a]", text: "Sin Lácteos" }, // Verde lima
-    "Sin Gluten": { icon: WheatOff, bg: "bg-[#ffc107]", text: "Sin Gluten" },  // Amarillo/Naranja
-    "Sin Soya": { icon: Leaf, bg: "bg-[#ec407a]", text: "Sin Soya" },          // Rosa chicle
+// 🔥 CONFIGURACIÓN DE ETIQUETAS (ELIMINADOS ÍCONOS Y ACTUALIZADO TAMAÑO) 🔥
+const TAG_CONFIG: Record<string, { bg: string, text: string }> = {
+    "Sin Azúcar": { bg: "bg-[#29b6f6]", text: "Sin Azúcar" },   // Azul brillante
+    "Sin Lácteos": { bg: "bg-[#8bc34a]", text: "Sin Lácteos" }, // Verde lima
+    "Sin Gluten": { bg: "bg-[#ffc107]", text: "Sin Gluten" },  // Amarillo/Naranja
+    "Sin Soya": { bg: "bg-[#ec407a]", text: "Sin Soya" },          // Rosa chicle
 };
 
 // 🔥 DATOS DEL SLIDER PRINCIPAL 🔥
@@ -292,7 +292,7 @@ export default function HomePage() {
                         return (
                             <motion.div key={`slider-${sabor.id}-${index}`} whileHover={{ y: -8 }} className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative">
                                 
-                                {/* 🔥 STICKER: SOLO SIN AZÚCAR (Círculo puro) 🔥 */}
+                                {/* 🔥 STICKER: SOLO SIN AZÚCAR (Círculo puro, MÁS GRANDE y SIN ÍCONO) 🔥 */}
                                 {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-2 pointer-events-none">
                                         {sabor.etiquetas
@@ -300,13 +300,13 @@ export default function HomePage() {
                                             .map((etiquetaId: string) => {
                                             const tagData = TAG_CONFIG[etiquetaId];
                                             if (!tagData) return null;
-                                            const Icon = tagData.icon;
                                             return (
-                                                <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[60px] h-[60px] rounded-full shadow-lg border-[3px] border-white dark:border-[#030712] ${tagData.bg}`}>
+                                                <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full shadow-lg border-[3px] border-white dark:border-[#030712] ${tagData.bg}`}>
                                                     <div className="absolute inset-[3px] border border-dashed border-white/70 rounded-full" />
-                                                    <Icon className="w-4 h-4 text-white z-10 mb-0.5" />
-                                                    <span className="text-[7px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
-                                                        {tagData.text}
+                                                    
+                                                    {/* Texto más grande, sin ícono y centrado */}
+                                                    <span className="text-[10px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
+                                                        Sin<br/>Azúcar
                                                     </span>
                                                 </div>
                                             );
