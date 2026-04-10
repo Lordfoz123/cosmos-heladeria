@@ -30,12 +30,12 @@ import { useRouter } from "next/navigation";
 import { collection, onSnapshot, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
-// 🔥 CONFIGURACIÓN DE ETIQUETAS (SE MANTIENE PARA LOS PRODUCTOS) 🔥
-const TAG_CONFIG: Record<string, { icon: any, color: string, text: string }> = {
-    "Sin Azúcar": { icon: Cuboid, color: "text-blue-500 bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-500/40", text: "Sin Azúcar" },
-    "Sin Lácteos": { icon: MilkOff, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/20 border-emerald-200 dark:border-emerald-500/40", text: "Sin Lácteos" },
-    "Sin Gluten": { icon: WheatOff, color: "text-amber-500 bg-amber-50 dark:bg-amber-500/20 border-amber-200 dark:border-amber-500/40", text: "Sin Gluten" },
-    "Sin Soya": { icon: Leaf, color: "text-rose-500 bg-rose-50 dark:bg-rose-500/20 border-rose-200 dark:border-rose-500/40", text: "Sin Soya" },
+// 🔥 CONFIGURACIÓN DE ETIQUETAS (ESTILO STICKER SÓLIDO) 🔥
+const TAG_CONFIG: Record<string, { icon: any, bg: string, text: string }> = {
+    "Sin Azúcar": { icon: Cuboid, bg: "bg-[#29b6f6]", text: "Sin Azúcar" },   // Azul brillante
+    "Sin Lácteos": { icon: MilkOff, bg: "bg-[#8bc34a]", text: "Sin Lácteos" }, // Verde lima
+    "Sin Gluten": { icon: WheatOff, bg: "bg-[#ffc107]", text: "Sin Gluten" },  // Amarillo/Naranja
+    "Sin Soya": { icon: Leaf, bg: "bg-[#ec407a]", text: "Sin Soya" },          // Rosa chicle
 };
 
 // 🔥 DATOS DEL SLIDER PRINCIPAL (LIMPIOS) 🔥
@@ -214,7 +214,7 @@ export default function HomePage() {
         <HeaderCosmos /> 
       </div>
 
-      {/* 1. HERO SLIDER (ETIQUETAS ELIMINADAS) */}
+      {/* 1. HERO SLIDER */}
       <section className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 w-full h-full z-0">
           <AnimatePresence>
@@ -243,8 +243,6 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.2 }} 
                 className="space-y-6"
               >
-                {/* AQUI YA NO ESTÁN LAS ETIQUETAS */}
-
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[1.05]">
                   {slide.title} <br />
                   <span className="text-[#bcd4dc] drop-shadow-md">{slide.titleHighlight}</span>
@@ -277,7 +275,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS (TODO EL DISEÑO ORIGINAL SE MANTIENE) */}
+      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS */}
       <section className="relative z-20 w-full overflow-hidden pb-32 pt-20">
         <div className="max-w-[1400px] mx-auto px-6 mb-10 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-2 transition-colors duration-300">Descubre la Experiencia</h2>
@@ -297,17 +295,25 @@ export default function HomePage() {
                         return (
                             <motion.div key={`slider-${sabor.id}-${index}`} whileHover={{ y: -8 }} className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative">
                                 
-                                {/* 🔥 LAS ETIQUETAS AQUÍ SI SE MANTIENEN 🔥 */}
-                                {sabor.etiquetas && sabor.etiquetas.length > 0 && (
-                                    <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5">
-                                        {sabor.etiquetas.map((etiquetaId: string) => {
+                                {/* 🔥 STICKER: SOLO SIN AZÚCAR 🔥 */}
+                                {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
+                                    <div className="absolute top-4 left-4 z-30 flex flex-col gap-2 pointer-events-none">
+                                        {sabor.etiquetas
+                                            .filter((e: string) => e === "Sin Azúcar")
+                                            .map((etiquetaId: string) => {
                                             const tagData = TAG_CONFIG[etiquetaId];
                                             if (!tagData) return null;
                                             const Icon = tagData.icon;
                                             return (
-                                                <div key={etiquetaId} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-sm ${tagData.color}`}>
-                                                    <Icon className="w-3 h-3" />
-                                                    {tagData.text}
+                                                <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[60px] h-[60px] rounded-full shadow-lg border-[3px] border-white dark:border-[#030712] ${tagData.bg}`}>
+                                                    <div className="absolute inset-[3px] border border-dashed border-white/70 rounded-full" />
+                                                    
+                                                    <Icon className="w-4 h-4 text-white z-10 mb-0.5" />
+                                                    <span className="text-[7px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
+                                                        {tagData.text}
+                                                    </span>
+                                                    
+                                                    <div className="absolute -bottom-[3px] -right-[3px] w-[20px] h-[20px] bg-gradient-to-tl from-slate-200 to-white dark:from-slate-700 dark:to-slate-900 rounded-tl-[12px] rounded-br-full shadow-[-2px_-2px_4px_rgba(0,0,0,0.25)] z-20" />
                                                 </div>
                                             );
                                         })}
