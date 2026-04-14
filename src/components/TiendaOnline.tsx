@@ -200,20 +200,17 @@ function ProductoTiendaCard({ prod, onToggleWishlist, isWishlisted, addToCart }:
           <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
         </button>
 
-        {/* 🔥 STICKER GIGANTE: SOLO SIN AZÚCAR, ABAJO A LA DERECHA 🔥 */}
+        {/* 🔥 STICKER GIGANTE: SOLO SIN AZÚCAR, INVERTIDO (Fondo Blanco, Borde Celeste) 🔥 */}
         {prod.etiquetas && prod.etiquetas.includes("Sin Azúcar") && (
             <div className="absolute bottom-4 right-4 z-30 flex flex-col items-end gap-2 pointer-events-none">
                 {prod.etiquetas
                     .filter((etiquetaId: string) => etiquetaId === "Sin Azúcar")
                     .map((etiquetaId: string) => {
-                    const tagData = TAG_CONFIG[etiquetaId];
-                    if (!tagData) return null;
                     return (
-                        <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full shadow-lg border-[3px] border-white dark:border-[#0B0F19] ${tagData.bg}`}>
-                            <div className="absolute inset-[3px] border border-dashed border-white/70 rounded-full" />
+                        <div key={etiquetaId} className="relative flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full shadow-lg border-[3px] border-[#29b6f6] bg-white dark:bg-[#0B0F19]">
+                            <div className="absolute inset-[3px] border border-dashed border-[#29b6f6]/60 rounded-full" />
                             
-                            {/* Texto más grande, sin ícono y centrado */}
-                            <span className="text-[10px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
+                            <span className="text-[10px] font-black text-[#29b6f6] uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
                                 Sin<br/>Azúcar
                             </span>
                         </div>

@@ -30,12 +30,12 @@ import { useRouter } from "next/navigation";
 import { collection, onSnapshot, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
-// 🔥 CONFIGURACIÓN DE ETIQUETAS (ELIMINADOS ÍCONOS Y ACTUALIZADO TAMAÑO) 🔥
+// 🔥 CONFIGURACIÓN DE ETIQUETAS (ESTILO STICKER INVERTIDO BLANCO) 🔥
 const TAG_CONFIG: Record<string, { bg: string, text: string }> = {
-    "Sin Azúcar": { bg: "bg-[#29b6f6]", text: "Sin Azúcar" },   // Azul brillante
-    "Sin Lácteos": { bg: "bg-[#8bc34a]", text: "Sin Lácteos" }, // Verde lima
-    "Sin Gluten": { bg: "bg-[#ffc107]", text: "Sin Gluten" },  // Amarillo/Naranja
-    "Sin Soya": { bg: "bg-[#ec407a]", text: "Sin Soya" },          // Rosa chicle
+    "Sin Azúcar": { bg: "bg-[#29b6f6]", text: "Sin Azúcar" },
+    "Sin Lácteos": { bg: "bg-[#8bc34a]", text: "Sin Lácteos" },
+    "Sin Gluten": { bg: "bg-[#ffc107]", text: "Sin Gluten" },
+    "Sin Soya": { bg: "bg-[#ec407a]", text: "Sin Soya" },
 };
 
 // 🔥 DATOS DEL SLIDER PRINCIPAL 🔥
@@ -125,6 +125,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    // Límite de 20 para ver todos los helados
     const q = query(collection(db, "productos_tienda"), where("activo", "==", true), limit(20));
     const unsub = onSnapshot(q, (snap) => {
       setDestacados(snap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -194,6 +195,7 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-200 overflow-x-hidden font-sans selection:bg-[#bcd4dc]/30 transition-colors duration-300">
       
+      {/* FONDO ESPACIAL BASE */}
       <div className="hidden dark:block absolute inset-0 z-0 overflow-hidden pointer-events-none fixed">
         {stars.map((star) => (
           <motion.div 
@@ -213,6 +215,7 @@ export default function HomePage() {
         <HeaderCosmos /> 
       </div>
 
+      {/* 1. HERO SLIDER */}
       <section className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 w-full h-full z-0">
           <AnimatePresence>
@@ -273,6 +276,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS */}
       <section className="relative z-20 w-full overflow-hidden pb-32 pt-20">
         <div className="max-w-[1400px] mx-auto px-6 mb-10 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-2 transition-colors duration-300">Descubre la Experiencia</h2>
@@ -280,43 +284,96 @@ export default function HomePage() {
         </div>
 
         {loadingDestacados ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-20 text-slate-500"><Loader2 className="w-8 h-8 animate-spin text-[#bcd4dc]" /><p className="mt-4 font-bold text-xs uppercase tracking-widest">Creando magia...</p></div>
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
+                <Loader2 className="w-8 h-8 animate-spin text-[#bcd4dc]" />
+                <p className="mt-4 font-bold text-xs uppercase tracking-widest">Creando magia...</p>
+            </div>
         ) : (
             <div className="relative max-w-[1500px] mx-auto group">
-                <button onClick={() => scrollCarousel('left')} className="absolute left-2 md:-left-4 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full bg-white/90 dark:bg-[#030712]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-900 dark:text-white hover:bg-[#bcd4dc] hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100 shadow-2xl hidden sm:flex"><ChevronLeft className="w-6 h-6" /></button>
-                <button onClick={() => scrollCarousel('right')} className="absolute right-2 md:-right-4 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full bg-white/90 dark:bg-[#030712]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-900 dark:text-white hover:bg-[#bcd4dc] hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100 shadow-2xl hidden sm:flex"><ChevronRight className="w-6 h-6" /></button>
-                <div ref={carouselRef} onMouseDown={onMouseDown} onMouseLeave={onMouseLeave} onMouseEnter={onMouseEnter} onMouseUp={onMouseUp} onMouseMove={onMouseMove} className="flex overflow-x-auto gap-6 px-6 pb-12 pt-4 hide-scrollbar cursor-grab active:cursor-grabbing" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <button onClick={() => scrollCarousel('left')} className="absolute left-2 md:-left-4 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full bg-white/90 dark:bg-[#030712]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-900 dark:text-white hover:bg-[#bcd4dc] hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100 shadow-2xl hidden sm:flex">
+                    <ChevronLeft className="w-6 h-6" />
+                </button>
+                
+                <button onClick={() => scrollCarousel('right')} className="absolute right-2 md:-right-4 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full bg-white/90 dark:bg-[#030712]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-900 dark:text-white hover:bg-[#bcd4dc] hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100 shadow-2xl hidden sm:flex">
+                    <ChevronRight className="w-6 h-6" />
+                </button>
+
+                <div 
+                    ref={carouselRef} 
+                    onMouseDown={onMouseDown} 
+                    onMouseLeave={onMouseLeave} 
+                    onMouseEnter={onMouseEnter} 
+                    onMouseUp={onMouseUp} 
+                    onMouseMove={onMouseMove} 
+                    className="flex overflow-x-auto gap-6 px-6 pb-12 pt-4 hide-scrollbar cursor-grab active:cursor-grabbing" 
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                     <style jsx>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+                    
                     {infiniteTrack.map((sabor, index) => {
                         const isWishlisted = wishlist.some((w:any) => w.id === sabor.id);
+                        
                         return (
-                            <motion.div key={`slider-${sabor.id}-${index}`} whileHover={{ y: -8 }} className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative">
-                                
-                                {/* 🔥 STICKER: SOLO SIN AZÚCAR (Círculo puro, MÁS GRANDE y SIN ÍCONO) 🔥 */}
-                                {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
-                                    <div className="absolute top-4 left-4 z-30 flex flex-col gap-2 pointer-events-none">
-                                        {sabor.etiquetas
-                                            .filter((e: string) => e === "Sin Azúcar")
-                                            .map((etiquetaId: string) => {
-                                            const tagData = TAG_CONFIG[etiquetaId];
-                                            if (!tagData) return null;
-                                            return (
-                                                <div key={etiquetaId} className={`relative flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full shadow-lg border-[3px] border-white dark:border-[#030712] ${tagData.bg}`}>
-                                                    <div className="absolute inset-[3px] border border-dashed border-white/70 rounded-full" />
-                                                    
-                                                    {/* Texto más grande, sin ícono y centrado */}
-                                                    <span className="text-[10px] font-black text-white uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
-                                                        Sin<br/>Azúcar
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
+                            <motion.div 
+                                key={`slider-${sabor.id}-${index}`} 
+                                whileHover={{ y: -8 }} 
+                                className="w-[280px] sm:w-[320px] shrink-0 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] overflow-hidden flex flex-col transition-all hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xl relative"
+                            >
+                                <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 dark:bg-[#030712] transition-colors duration-300">
+                                    <motion.img 
+                                        src={sabor.imagen || "/icons/pote-16oz.png"} 
+                                        className="w-full h-full object-cover pointer-events-none" 
+                                        alt={sabor.nombre} 
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50 pointer-events-none" />
+                                    
+                                    {/* Botón de favoritos arriba a la derecha */}
+                                    <button 
+                                        onClick={(e) => { 
+                                            e.preventDefault(); 
+                                            if (isDragging.current) return; 
+                                            if (!user) { setLoginModalOpen(true); return; } 
+                                            isWishlisted ? removeFromWishlist(sabor.id) : addToWishlist(sabor); 
+                                        }} 
+                                        className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-black/60 transition-colors shadow-sm"
+                                    >
+                                        <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-pink-500 text-pink-500' : 'text-slate-400 dark:text-white'}`} />
+                                    </button>
 
-                                <button onClick={(e) => { e.preventDefault(); if (isDragging.current) return; if (!user) { setLoginModalOpen(true); return; } isWishlisted ? removeFromWishlist(sabor.id) : addToWishlist(sabor); }} className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-black/60 transition-colors shadow-sm"><Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-pink-500 text-pink-500' : 'text-slate-400 dark:text-white'}`} /></button>
-                                <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 dark:bg-[#030712] transition-colors duration-300"><motion.img src={sabor.imagen || "/icons/pote-16oz.png"} className="w-full h-full object-cover pointer-events-none" alt={sabor.nombre} /><div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50 pointer-events-none" /></div>
-                                <div className="p-6 flex flex-col flex-1 relative z-10 bg-white dark:bg-[#030712] transition-colors duration-300"><h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight mb-1">{sabor.nombre}</h3><p className="text-xs text-slate-500 dark:text-slate-400 mb-6 line-clamp-2 font-medium leading-relaxed">{sabor.descripcion}</p><div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end"><Link href={`/producto/${sabor.id}`} onClick={(e) => { if (isDragging.current) e.preventDefault(); }}><button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold uppercase tracking-widest hover:bg-[#bcd4dc] dark:hover:bg-[#bcd4dc] hover:text-slate-900 dark:hover:text-slate-900 transition-colors shadow-sm">Ver en Tienda <ArrowRight className="w-4 h-4" /></button></Link></div></div>
+                                    {/* 🔥 STICKER BLANCO INVERTIDO: ABAJO A LA DERECHA 🔥 */}
+                                    {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
+                                        <div className="absolute bottom-4 right-4 z-30 flex flex-col items-end gap-2 pointer-events-none">
+                                            {sabor.etiquetas
+                                                .filter((etiquetaId: string) => etiquetaId === "Sin Azúcar")
+                                                .map((etiquetaId: string) => {
+                                                return (
+                                                    <div key={etiquetaId} className="relative flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full shadow-lg border-[3px] border-[#29b6f6] bg-white dark:bg-[#0B0F19]">
+                                                        <div className="absolute inset-[3px] border border-dashed border-[#29b6f6]/60 rounded-full" />
+                                                        <span className="text-[10px] font-black text-[#29b6f6] uppercase text-center leading-[1.1] px-1 z-10 break-words w-full">
+                                                            Sin<br/>Azúcar
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="p-6 flex flex-col flex-1 relative z-10 bg-white dark:bg-[#030712] transition-colors duration-300">
+                                    <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight mb-1">
+                                        {sabor.nombre}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 line-clamp-2 font-medium leading-relaxed">
+                                        {sabor.descripcion}
+                                    </p>
+                                    <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                                        <Link href={`/producto/${sabor.id}`} onClick={(e) => { if (isDragging.current) e.preventDefault(); }}>
+                                            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold uppercase tracking-widest hover:bg-[#bcd4dc] dark:hover:bg-[#bcd4dc] hover:text-slate-900 dark:hover:text-slate-900 transition-colors shadow-sm">
+                                                Ver en Tienda <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </div>
                             </motion.div>
                         )
                     })}
@@ -325,12 +382,18 @@ export default function HomePage() {
         )}
       </section>
 
+      {/* 3. NEWSLETTER */}
       <div className="relative z-20 max-w-5xl mx-auto px-6 pb-32">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 md:p-16 text-center shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-300">
           <Sparkles className="w-10 h-10 text-[#8ebccb] dark:text-[#bcd4dc] mx-auto mb-6" />
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors duration-300">Únete a la tripulación</h2>
           <p className="text-slate-600 dark:text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 font-medium transition-colors duration-300">Recibe transmisiones con sabores secretos, lanzamientos exclusivos y beneficios para nuestra comunidad Plant-Based.</p>
-          <form className="max-w-md mx-auto relative flex items-center" onSubmit={handleNewsletterSubmit}><input type="email" required value={newsletterEmail} onChange={(e) => setNewsletterEmail(e.target.value)} placeholder="tu@correo.com" className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl py-4 px-6 focus:outline-none focus:border-[#bcd4dc] transition-all font-medium" /><button type="submit" className="absolute right-2 bg-[#bcd4dc] hover:bg-slate-900 dark:hover:bg-white text-slate-900 hover:text-white dark:hover:text-slate-900 rounded-xl p-2.5 font-bold transition-colors flex items-center justify-center active:scale-95"><Send className="w-5 h-5" /></button></form>
+          <form className="max-w-md mx-auto relative flex items-center" onSubmit={handleNewsletterSubmit}>
+            <input type="email" required value={newsletterEmail} onChange={(e) => setNewsletterEmail(e.target.value)} placeholder="tu@correo.com" className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl py-4 px-6 focus:outline-none focus:border-[#bcd4dc] transition-all font-medium" />
+            <button type="submit" className="absolute right-2 bg-[#bcd4dc] hover:bg-slate-900 dark:hover:bg-white text-slate-900 hover:text-white dark:hover:text-slate-900 rounded-xl p-2.5 font-bold transition-colors flex items-center justify-center active:scale-95">
+                <Send className="w-5 h-5" />
+            </button>
+          </form>
         </motion.div>
       </div>
 
