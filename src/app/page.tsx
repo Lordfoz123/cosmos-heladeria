@@ -16,7 +16,8 @@ import {
   Cuboid,
   MilkOff,
   WheatOff,
-  Leaf
+  Leaf,
+  MessageCircle // 🔥 IMPORTADO EL ÍCONO DE WHATSAPP 🔥
 } from "lucide-react";
 
 // Componentes del Sitio
@@ -55,7 +56,7 @@ const HERO_SLIDES = [
     titleHighlight: "Sin Culpa",
     description: "Disfruta de nuestra línea zero azúcar. Ingredientes 100% naturales para un estilo de vida saludable y delicioso.",
     bgImage: "bg2.webp",
-    ctaText: "Pedir Chocolate Zero",
+    ctaText: "Visitar Tienda",
     ctaLink: "/tienda"
   },
   {
@@ -64,7 +65,7 @@ const HERO_SLIDES = [
     titleHighlight: "Tradición",
     description: "Una textura increíblemente cremosa que compite directamente con el helado tradicional, pero con puros valores agregados.",
     bgImage: "bg3.webp",
-    ctaText: "Ver Catálogo Completo",
+    ctaText: "Visitar Tienda",
     ctaLink: "/tienda"
   }
 ];
@@ -125,7 +126,6 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    // Límite de 20 para ver todos los helados
     const q = query(collection(db, "productos_tienda"), where("activo", "==", true), limit(20));
     const unsub = onSnapshot(q, (snap) => {
       setDestacados(snap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -195,7 +195,6 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-200 overflow-x-hidden font-sans selection:bg-[#bcd4dc]/30 transition-colors duration-300">
       
-      {/* FONDO ESPACIAL BASE */}
       <div className="hidden dark:block absolute inset-0 z-0 overflow-hidden pointer-events-none fixed">
         {stars.map((star) => (
           <motion.div 
@@ -327,7 +326,6 @@ export default function HomePage() {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50 pointer-events-none" />
                                     
-                                    {/* Botón de favoritos arriba a la derecha */}
                                     <button 
                                         onClick={(e) => { 
                                             e.preventDefault(); 
@@ -340,7 +338,6 @@ export default function HomePage() {
                                         <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-pink-500 text-pink-500' : 'text-slate-400 dark:text-white'}`} />
                                     </button>
 
-                                    {/* 🔥 STICKER BLANCO INVERTIDO: ABAJO A LA DERECHA 🔥 */}
                                     {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
                                         <div className="absolute bottom-4 right-4 z-30 flex flex-col items-end gap-2 pointer-events-none">
                                             {sabor.etiquetas
@@ -396,6 +393,30 @@ export default function HomePage() {
           </form>
         </motion.div>
       </div>
+
+      {/* 🔥 WIDGET FLOTANTE DE WHATSAPP (Mismo estilo que Contacto) 🔥 */}
+      <motion.a
+        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+        href="https://wa.me/51907414295?text=Hola%20Cosmos%20%E2%9C%A8%2C%20tengo%20un%20antojo%20urgente%20de%20helado!"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-[90] bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/60 p-6 rounded-[2rem] shadow-2xl dark:shadow-none hover:-translate-y-1 hover:shadow-xl transition-all duration-300 max-w-[280px] group overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#bcd4dc]/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#bcd4dc]/20 transition-colors" />
+        
+        <div className="w-14 h-14 bg-slate-50 dark:bg-[#bcd4dc]/10 rounded-2xl flex items-center justify-center text-slate-900 dark:text-[#bcd4dc] mb-6 border border-[#bcd4dc]/20 transition-colors">
+          <MessageCircle className="w-7 h-7" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight transition-colors">WhatsApp</h3>
+        <p className="text-slate-500 dark:text-slate-400 font-medium text-sm leading-relaxed mb-6 transition-colors">
+          Respuestas rápidas para antojos urgentes.
+        </p>
+        <div className="flex items-center text-[11px] font-black tracking-widest text-slate-900 dark:text-[#bcd4dc] uppercase transition-colors">
+          Escribir AHORA <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </motion.a>
 
       <CartSlider show={showCart} cart={carrito} onClose={() => setShowCart(false)} updateCantidad={updateCantidad} removeFromCart={removeFromCart} total={total} finalizarCompra={finalizarCompra} />
 
