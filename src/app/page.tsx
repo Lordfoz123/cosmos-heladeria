@@ -17,7 +17,7 @@ import {
   MilkOff,
   WheatOff,
   Leaf,
-  MessageCircle // 🔥 IMPORTADO EL ÍCONO DE WHATSAPP 🔥
+  MessageCircle
 } from "lucide-react";
 
 // Componentes del Sitio
@@ -276,7 +276,7 @@ export default function HomePage() {
       </section>
 
       {/* 2. CARRUSEL INFINITO DINÁMICO DE PRODUCTOS */}
-      <section className="relative z-20 w-full overflow-hidden pb-32 pt-20">
+      <section className="relative z-20 w-full overflow-hidden pb-20 pt-20">
         <div className="max-w-[1400px] mx-auto px-6 mb-10 text-center md:text-left">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-2 transition-colors duration-300">Descubre la Experiencia</h2>
             <p className="text-slate-600 dark:text-slate-400 font-medium text-lg transition-colors duration-300">Sabores innovadores que protegen el bienestar y el planeta.</p>
@@ -338,6 +338,7 @@ export default function HomePage() {
                                         <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-pink-500 text-pink-500' : 'text-slate-400 dark:text-white'}`} />
                                     </button>
 
+                                    {/* 🔥 STICKER BLANCO INVERTIDO: ABAJO A LA DERECHA 🔥 */}
                                     {sabor.etiquetas && sabor.etiquetas.includes("Sin Azúcar") && (
                                         <div className="absolute bottom-4 right-4 z-30 flex flex-col items-end gap-2 pointer-events-none">
                                             {sabor.etiquetas
@@ -379,6 +380,37 @@ export default function HomePage() {
         )}
       </section>
 
+      {/* 🔥 BANNER WHATSAPP (ANTOJO URGENTE) 🔥 */}
+      <section className="relative z-20 max-w-5xl mx-auto px-6 mb-12">
+        <motion.a 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          href="https://wa.me/51907414295?text=Hola%20Cosmos%20%E2%9C%A8%2C%20tengo%20un%20antojo%20urgente%20de%20helado!"
+          target="_blank"
+          className="group block bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/10 rounded-[3rem] p-8 md:p-12 overflow-hidden relative shadow-2xl transition-all dark:hover:border-[#25D366]/40 hover:border-[#25D366]/40"
+        >
+          {/* Brillo de fondo */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#25D366]/10 rounded-full blur-[80px] -mr-20 -mt-20 group-hover:bg-[#25D366]/20 transition-colors" />
+          
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-[1.5rem] flex items-center justify-center border border-slate-200 dark:border-white/10 group-hover:scale-110 transition-transform duration-500">
+                <MessageCircle className="w-10 h-10 text-[#25D366]" />
+              </div>
+              <div>
+                <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2 transition-colors">WhatsApp Cosmos</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-lg font-medium transition-colors">¿Antojo urgente? Chatea con la tripulación ahora.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-8 py-4 rounded-2xl text-slate-900 dark:text-white font-black uppercase tracking-widest text-sm group-hover:bg-slate-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all">
+              Escribir ahora <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </div>
+          </div>
+        </motion.a>
+      </section>
+
       {/* 3. NEWSLETTER */}
       <div className="relative z-20 max-w-5xl mx-auto px-6 pb-32">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 md:p-16 text-center shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-300">
@@ -393,30 +425,6 @@ export default function HomePage() {
           </form>
         </motion.div>
       </div>
-
-      {/* 🔥 WIDGET FLOTANTE DE WHATSAPP (Mismo estilo que Contacto) 🔥 */}
-      <motion.a
-        initial={{ opacity: 0, y: 20, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        href="https://wa.me/51907414295?text=Hola%20Cosmos%20%E2%9C%A8%2C%20tengo%20un%20antojo%20urgente%20de%20helado!"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-[90] bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/60 p-6 rounded-[2rem] shadow-2xl dark:shadow-none hover:-translate-y-1 hover:shadow-xl transition-all duration-300 max-w-[280px] group overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#bcd4dc]/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#bcd4dc]/20 transition-colors" />
-        
-        <div className="w-14 h-14 bg-slate-50 dark:bg-[#bcd4dc]/10 rounded-2xl flex items-center justify-center text-slate-900 dark:text-[#bcd4dc] mb-6 border border-[#bcd4dc]/20 transition-colors">
-          <MessageCircle className="w-7 h-7" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight transition-colors">WhatsApp</h3>
-        <p className="text-slate-500 dark:text-slate-400 font-medium text-sm leading-relaxed mb-6 transition-colors">
-          Respuestas rápidas para antojos urgentes.
-        </p>
-        <div className="flex items-center text-[11px] font-black tracking-widest text-slate-900 dark:text-[#bcd4dc] uppercase transition-colors">
-          Escribir AHORA <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </motion.a>
 
       <CartSlider show={showCart} cart={carrito} onClose={() => setShowCart(false)} updateCantidad={updateCantidad} removeFromCart={removeFromCart} total={total} finalizarCompra={finalizarCompra} />
 
